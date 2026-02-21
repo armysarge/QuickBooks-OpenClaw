@@ -1,6 +1,6 @@
 ---
 name: quickbooks-openclaw
-version: 1.0.0
+version: 1.0.1
 description: Comprehensive QuickBooks Online API integration for accounting, invoicing, payments, and financial reporting
 author: Armysarge
 license: MIT
@@ -17,7 +17,7 @@ category: Business & Finance
 
 # QuickBooks API Skill for OpenClaw
 
-A complete QuickBooks Online API integration skill for OpenClaw providing full access to accounting, invoicing, customer management, inventory, payments, and financial reporting through the Intuit QuickBooks API.
+A complete QuickBooks Online direct API integration skill for OpenClaw providing full access to accounting, invoicing, customer management, inventory, payments, and financial reporting through the Intuit QuickBooks API.
 
 ## Overview
 
@@ -41,7 +41,7 @@ This skill enables OpenClaw to interact with QuickBooks Online for:
 2. **App Credentials**
    - Client ID from your QuickBooks app
    - Client Secret from your QuickBooks app
-   - Redirect URI: `http://localhost:3000/callback`
+   - Redirect URI: `http://localhost:3001/callback`
 
 3. **Node.js**
    - Version 18.0.0 or higher
@@ -57,7 +57,6 @@ npm install
 ```
 
 Required packages:
-- `@modelcontextprotocol/sdk` - MCP server SDK
 - `axios` - HTTP client for API requests
 - `express` - OAuth callback server
 - `open` - Browser automation for OAuth
@@ -76,7 +75,8 @@ Edit `config.json` with your QuickBooks app credentials:
 {
   "client_id": "YOUR_CLIENT_ID_HERE",
   "client_secret": "YOUR_CLIENT_SECRET_HERE",
-  "redirect_uri": "http://localhost:3000/callback",
+  "redirect_uri": "http://localhost:3001/callback",
+  "api_environment": "sandbox",
   "access_token": "",
   "refresh_token": "",
   "realm_id": "",
@@ -133,7 +133,7 @@ Initiate OAuth2 authentication flow.
 **Parameters:**
 - `client_id` (required): Your QuickBooks app Client ID
 - `client_secret` (required): Your QuickBooks app Client Secret
-- `redirect_uri` (optional): OAuth redirect URI (default: http://localhost:3000/callback)
+- `redirect_uri` (optional): OAuth redirect URI (default: http://localhost:3001/callback)
 
 **Example:**
 ```json
@@ -587,12 +587,32 @@ The skill provides detailed error messages:
 
 All configuration is stored in `config.json`. This file contains both your app credentials (Client ID and Secret) and the OAuth tokens that are saved after authentication.
 
-### Sandbox vs Production
+### API Environment
 
-- **Sandbox**: Test environment for development (recommended for testing)
-- **Production**: Real company data (requires app approval)
+The skill supports both Sandbox and Production environments via the `api_environment` setting in `config.json`:
 
-Use sandbox credentials for testing, production credentials for live data.
+- **sandbox** (default): QuickBooks Sandbox API for development and testing
+- **production**: QuickBooks Production API for live company data (requires app verification)
+
+To switch environments, update `config.json`:
+```json
+{
+  "api_environment": "sandbox"  // or "production"
+}
+```
+
+**Important**: Production mode requires your app to be verified by Intuit. Start with sandbox for development.
+
+### Security Considerations
+
+⚠️ **Credential Storage**: This skill stores OAuth tokens and client secrets in plaintext in `config.json` on your local filesystem. To enhance security:
+
+- Set restrictive file permissions on `config.json` (read/write for owner only)
+- Never commit `config.json` to version control (included in `.gitignore`)
+- Store the skill directory in a secure location
+- Regularly rotate your client secrets in the QuickBooks Developer Portal
+- Consider encrypting your disk or using a secure secret management solution
+- Do not enable `autoStart` until you've verified the skill behaves as expected
 
 ## Rate Limits
 
@@ -654,9 +674,8 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Version
 
-**Current Version**: 1.0.0  
+**Current Version**: 1.0.1  
 **Last Updated**: February 21, 2026  
-**MCP SDK Version**: 0.5.0+  
 **Node.js Required**: 18.0.0+
 
 ## Tags

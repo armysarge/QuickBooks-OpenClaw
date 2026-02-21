@@ -5,6 +5,31 @@ All notable changes to the QuickBooks API Skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-02-21
+
+### Fixed
+- **Port Mismatch**: Standardized redirect URI and callback server to port 3001 across all documentation (was inconsistent between 3000 and 3001)
+- **Dependency Cleanup**: Removed unused `@modelcontextprotocol/sdk` reference from SKILL.md (not actually required)
+- **API Endpoint**: Changed from hard-coded sandbox URL to configurable environment setting
+
+### Added
+- **Configurable API Environment**: Added `api_environment` field to `config.json` allowing easy switching between sandbox and production
+- **Security Documentation**: Comprehensive security warnings about credential storage in plaintext
+- **Security Best Practices**: 10-point security checklist for production deployments
+- **Environment Troubleshooting**: Added guidance for API environment configuration issues
+
+### Changed
+- Config template now includes `api_environment: "sandbox"` by default
+- `run.js` now reads `api_environment` from config and selects correct API base URL dynamically
+- Enhanced documentation with specific security considerations for credential management
+- Updated version numbers across all documentation files
+
+### Security
+- Added explicit warnings about plaintext credential storage in `config.json`
+- Documented file permission requirements
+- Added recommendations for credential rotation
+- Included notes about autoStart risks
+
 ## [1.0.0] - 2026-02-21
 
 ### Added

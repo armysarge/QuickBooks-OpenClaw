@@ -81,7 +81,7 @@ A comprehensive QuickBooks Online API integration skill for OpenClaw, providing 
 3. Click "Create an app" and select "QuickBooks Online and Payments"
 4. Fill in your app details:
    - **App name**: Choose a name for your app
-   - **Redirect URI**: `http://localhost:3001/callback`
+   - **Redirect URI**: `http://localhost:3001/callback` (must match exactly)
 5. After creating the app, note your:
    - **Client ID**
    - **Client Secret**
@@ -111,6 +111,7 @@ Edit `config.json` and add your credentials:
   "client_id": "YOUR_CLIENT_ID_HERE",
   "client_secret": "YOUR_CLIENT_SECRET_HERE",
   "redirect_uri": "http://localhost:3001/callback",
+  "api_environment": "sandbox",
   "access_token": "",
   "refresh_token": "",
   "realm_id": "",
@@ -338,13 +339,60 @@ The skill includes comprehensive error handling:
 - **Validation Errors**: Client-side validation of required fields
 - **Rate Limiting**: Automatic retry with exponential backoff (if needed)
 
+## API Environment Configuration
+
+The skill supports both Sandbox and Production environments:
+
+### Sandbox (Default)
+For testing and development. Configured automatically when you authenticate.
+
+```json
+{
+  "api_environment": "sandbox"
+}
+```
+
+### Production
+For live company data. Requires Intuit app verification.
+
+```json
+{
+  "api_environment": "production"
+}
+```
+
+**Switching Environments:**
+1. Update `api_environment` in `config.json`
+2. Re-authenticate with `qb_authenticate` using production credentials
+3. Verify you're using production Client ID and Secret from QuickBooks Developer Portal
+
 ## Security Best Practices
 
-1. **Never commit config.json** - Add it to `.gitignore`
-2. **Use Sandbox for Testing** - Test with sandbox data first
-3. **Rotate Credentials** - Regularly rotate your client secrets
-4. **Secure Storage** - Keep config.json permissions restricted
-5. **HTTPS in Production** - Use HTTPS redirect URIs for production
+⚠️ **Important Security Considerations**
+
+This skill stores sensitive credentials in plaintext in `config.json`. Before using in production:
+
+1. **File Permissions** - Restrict `config.json` to owner read/write only:
+   - Windows: Right-click → Properties → Security → Advanced
+   - Linux/Mac: `chmod 600 config.json`
+
+2. **Never Commit Credentials** - Ensure `config.json` is in `.gitignore`
+
+3. **Secure Storage Location** - Store the skill in a protected directory
+
+4. **Regular Credential Rotation** - Rotate client secrets monthly in QuickBooks Developer Portal
+
+5. **Audit Access** - Monitor who has access to the machine and skill directory
+
+6. **Use Sandbox First** - Always test with sandbox before production
+
+7. **Disable AutoStart** - Don't enable autoStart in OpenClaw until thoroughly tested
+
+8. **HTTPS in Production** - Use HTTPS redirect URIs for production deployments
+
+9. **Monitor Token Usage** - Refresh tokens expire after 100 days of inactivity
+
+10. **Principle of Least Privilege** - Only grant QuickBooks scopes you actually need
 
 ## Troubleshooting
 
@@ -362,12 +410,19 @@ The skill includes comprehensive error handling:
 
 ### Browser Doesn't Open
 - Manually visit the authorization URL provided in the output
-- Make sure port 3000 is available
+- Make sure port 3001 is available
 
-### Port 3000 Already in Use
-- Change the redirect_uri in both:
-  - Your QuickBooks app settings
-  - Your config.json file
+### Port 3001 Already in Use
+- Kill the process using port 3001
+- Or change to a different port in:
+  - Your QuickBooks app settings (redirect URI)
+  - Your `config.json` (redirect_uri)
+  - The `run.js` code (server port)
+
+### Wrong API Environment
+- Check `api_environment` in `config.json` matches your intent (sandbox vs production)
+- Production requires verified app - use sandbox for development
+- After changing environment, re-authenticate with matching credentials
 
 ## Development
 
@@ -427,7 +482,17 @@ Contributions are welcome! Please:
 
 ## Changelog
 
-### Version 1.0.0
+### Version 1.0.1 - 2026-02-21
+**Security & Configuration Update**
+
+- ✅ Fixed port mismatch: Standardized all documentation to port 3001
+- ✅ Made API environment configurable: Added `api_environment` setting (sandbox/production)
+- ✅ Removed unused dependency: Cleaned up @modelcontextprotocol/sdk reference
+- ✅ Enhanced security documentation: Added credential storage warnings and best practices
+- ✅ Updated configuration template with api_environment field
+- ✅ Fixed run.js to dynamically select API endpoint based on configuration
+
+### Version 1.0.0 - 2026-02-21
 - Initial release
 - Full OAuth2 authentication
 - Complete CRUD operations for all major entities

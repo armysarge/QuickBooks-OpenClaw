@@ -1,6 +1,6 @@
 {
   "name": "quickbooks-api-skill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Shaun Scholtz",
   "description": "QuickBooks Online API integration skill for OpenClaw",
   "main": "run.js",

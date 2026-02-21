@@ -24,7 +24,6 @@ const __dirname = dirname(__filename);
 
 // Configuration
 const CONFIG_FILE = path.join(__dirname, 'config.json');
-const QB_API_BASE = 'https://sandbox-quickbooks.api.intuit.com/v3/company';  // SANDBOX MODE
 const QB_AUTH_URL = 'https://appcenter.intuit.com/connect/oauth2';
 const QB_TOKEN_URL = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
 const QB_REFRESH_URL = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
@@ -47,6 +46,13 @@ class QuickBooksClient {
       this.refreshToken = this.config.refresh_token;
       this.realmId = this.config.realm_id;
       this.tokenExpiry = this.config.token_expiry;
+      
+      // Set API base URL based on environment
+      const apiEnv = this.config.api_environment || 'sandbox';
+      this.apiBase = apiEnv === 'production'
+        ? 'https://quickbooks.api.intuit.com/v3/company'
+        : 'https://sandbox-quickbooks.api.intuit.com/v3/company';
+      
       return true;
     } catch (error) {
       return false;
@@ -58,6 +64,7 @@ class QuickBooksClient {
       client_id: this.config.client_id,
       client_secret: this.config.client_secret,
       redirect_uri: this.config.redirect_uri,
+      api_environment: this.config.api_environment || 'sandbox',
       access_token: this.accessToken,
       refresh_token: this.refreshToken,
       realm_id: this.realmId,
@@ -102,7 +109,7 @@ class QuickBooksClient {
 
     await this.refreshAccessToken();
 
-    const url = `${QB_API_BASE}/${this.realmId}/${endpoint}`;
+    const url = `${this.apiBase}/${this.realmId}/${endpoint}`;
     const config = {
       method,
       url,
