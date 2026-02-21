@@ -1,0 +1,9 @@
+{
+  "client_id": "YOUR_QUICKBOOKS_CLIENT_ID",
+  "client_secret": "YOUR_QUICKBOOKS_CLIENT_SECRET",
+  "redirect_uri": "http://localhost:3000/callback",
+  "access_token": "",
+  "refresh_token": "",
+  "realm_id": "",
+  "token_expiry": 0
+}
